@@ -20,9 +20,16 @@ public class UserHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
+
+    // user의 insert update에는 영향을 주지 않아야함. // ManyToOne할때는 불필요한 컬럼이다.
+//    @Column(name = "user_id", insertable = false,updatable = false)
+//    private Long userId;
+
     private String name;
     private String email;
+
+    @ManyToOne  // 다 대 일
+    private User user;
 //    @CreatedDate
 //    private LocalDateTime createdAt;
 //    @LastModifiedDate

@@ -31,9 +31,9 @@ public class UserEntityListener {
         User user = (User) o;
 
         UserHistory userHistory = new UserHistory();
-        userHistory.setUserId(user.getId());
         userHistory.setName(user.getName());
         userHistory.setEmail(user.getEmail());
+        userHistory.setUser(user);  //user객체를 넣는다.
 
         userHistoryRepository.save(userHistory);
     }

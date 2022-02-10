@@ -10,9 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Transactional
 @SpringBootTest
 class UserRepositoryTest {
     @Autowired
@@ -34,12 +36,16 @@ class UserRepositoryTest {
         user.setEmail("daniel@fast.com");
         userRepository.save(user);
 
-//        userHistoryRepository.findAll().forEach(System.out::println);
+        userHistoryRepository.findAll().forEach(System.out::println);
         // Table 관계로 가져오기.
-        List<UserHistory> result = userHistoryRepository.findByUserId(userRepository.findByEmail("daniel@fast.com").getId());
+//        List<UserHistory> result = userHistoryRepository.findByUserId(userRepository.findByEmail("daniel@fast.com").getId());
+        List<UserHistory> result = userRepository.findByEmail("daniel@fast.com").getUserHistories();
 
         result.forEach(System.out::println);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>");
 
+        //결론은 User와 UserHistory데이터를 모두 가져오기 위헤서는 N : 1을 사용하여 userHistory 즉 N쪽에서 getUser를 사용하여 검색한다.
+        System.out.println("UserHistory.getUser() - (N : 1) : " + userHistoryRepository.findAll().get(0).getUser());
     }
 
     @Test
@@ -60,7 +66,7 @@ class UserRepositoryTest {
     @Test
     void prePersistTest() {
         User user = new User();
-        user.setEmail("martin2@fast.com");
+        user.setEmail("martin3@fast.com");
         user.setName("martin");
 //        user.setCreatedAt(LocalDateTime.now());
 //        user.setUpdatedAt(LocalDateTime.now());

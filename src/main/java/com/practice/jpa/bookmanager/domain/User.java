@@ -6,6 +6,8 @@ import com.practice.jpa.bookmanager.domain.listener.UserEntityListener;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +19,7 @@ import javax.persistence.*;
 @Entity // 해당 객체가 JPA에서 관리하고 있는 객체인것을 정의.
 @EntityListeners(value = {UserEntityListener.class})
 //@Table(name = "user", indexes = {@Index(columnList = "name")}, uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
-public class User extends BaseEntity{
+public class User extends BaseEntity {
 
     @Id // 엔티티에는 식별자가 필요한데 @ID로 표현.
     @GeneratedValue(strategy = GenerationType.IDENTITY) // GenerationType (IDENTITY, SEQUENCE, TABLE, AUTO)
@@ -32,7 +34,17 @@ public class User extends BaseEntity{
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @ToString.Exclude //순환참조 예방.
+    private List<UserHistory> userHistories
+            = new ArrayList<>(); //getUserHistoryes를 했을때 NullPointException이 뜨지 않게 기본리스트 넣어주자.
+    // Jpa에서 해당값이 존재하지 않으면 빈 리스트를 자동으로 넣어주기는 하지만, persist하기 전에 해당 값이 Null이기 때문에 로직에 따라 오류가 생길수있다.
 
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    private List<Review> reviews = new ArrayList<>();
 
         /*IDENTITY
     * DB에서 AUTOINCREMENT를 이용해 자동으로 ID값이 늘어나는 것 처럼 id값을 먼저 insert 시킨다.
