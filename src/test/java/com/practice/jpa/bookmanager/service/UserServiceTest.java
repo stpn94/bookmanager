@@ -16,6 +16,8 @@ class UserServiceTest {
     @Test
     void test() {
         userService.put();
-        System.out.println(">>>>>> " + userRepository.findByEmail("newUser@fast.com"));
+//        System.out.println(">>>>>> " + userRepository.findByEmail("newUser@fast.com"));
+        userRepository.findAll().forEach(System.out::println);
     }
+
 }
