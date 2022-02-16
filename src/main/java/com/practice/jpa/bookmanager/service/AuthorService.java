@@ -13,7 +13,7 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void preAuthor() {
+    public void putAuthor() {
         Author author = new Author();
         author.setName("martin");
 

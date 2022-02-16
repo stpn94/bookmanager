@@ -1,8 +1,11 @@
 package com.practice.jpa.bookmanager.domain;
 
+import com.practice.jpa.bookmanager.converter.BookStatusConverter;
 import com.practice.jpa.bookmanager.domain.listener.Auditable;
+import com.practice.jpa.bookmanager.repository.dto.BookStatus;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -18,6 +21,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)       //EqualsAndHashCode를 재정의해준다.
 //@EntityListeners(value = AuditingEntityListener.class)
 @DynamicUpdate
+@Where(clause = "deleted =false")
 public class Book extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +33,10 @@ public class Book extends BaseEntity {
 
     @OneToMany  // 1 : N \ Book : Review
     @JoinColumn(name = "book_id")   //중간 테이블 방지
-    @ToString.Exclude               //ToString 순환참조 방지
+    @ToString.Exclude
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToOne  // N : 1 \ Book : publisher
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE} )  // N : 1 \ Book : publisher
     @ToString.Exclude
     private Publisher publisher;
 
@@ -50,6 +54,12 @@ public class Book extends BaseEntity {
     public void addBookAndAuthors(BookAndAuthor... bookAndAuthors) {
         Collections.addAll(this.bookAndAuthors, bookAndAuthors);
     }
+
+    private boolean deleted; // 기본=false
+
+    @Convert(converter = BookStatusConverter.class) //어떤 컨버터 class 쓸지 지정
+    private BookStatus status; // 판매상태
+
 //    @CreatedDate
 //    private LocalDateTime createdAt;
 //

@@ -1,6 +1,5 @@
 package com.practice.jpa.bookmanager.service;
 
-import com.practice.jpa.bookmanager.domain.Author;
 import com.practice.jpa.bookmanager.domain.Book;
 import com.practice.jpa.bookmanager.repository.AuthorRepository;
 import com.practice.jpa.bookmanager.repository.BookRepository;
@@ -9,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -28,13 +29,16 @@ public class BookService {
         book.setName("JPA 시작하기");
 
         bookRepository.save(book);
-
+        try {
+            authorService.putAuthor();
+        } catch (RuntimeException e) {
+        }
 //        Author author = new Author();
 //        author.setName("martin");
 //
 //        authorRepository.save(author);
 //
-//        throw new RuntimeException("오류나서 DB commit 발생안함"); // unchecked Exception
+        throw new RuntimeException("오류가 발생 트랜젝션 어떻게 됨?"); // unchecked Exception
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -48,5 +52,14 @@ public class BookService {
 //        Book book = bookRepository.findById(id).get();
 //        book.setName("바뀔까?");
 //        bookRepository.save(book);
+    }
+
+    @Transactional
+    public List<Book> getAll() {
+        List<Book> books = bookRepository.findAll();
+
+        books.forEach(System.out::println);
+
+        return books;
     }
 }
